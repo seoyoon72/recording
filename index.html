@@ -1,0 +1,650 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style></head><body>
+<title>충남대 구술 연습</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* Layout: an exam-room practice bench. Question list on the side, one question and a 90-second speaking track on the bench. */
+:root {
+  --bg: #eef2f1;
+  --bench: #fbfcfc;
+  --ink: #17231f;
+  --muted: #55655f;
+  --line: #cdd8d4;
+  --board: #17473b;
+  --board-ink: #f3f8f5;
+  --band: #bfe0cf;
+  --soft: #e0ebe6;
+  --again: #a93a2b;
+  --close: #8a5f00;
+  --sure: #17694c;
+  --serif: "Gowun Batang", "Nanum Myeongjo", "Apple SD Gothic Neo", serif;
+  --sans: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101816; --bench: #17211e; --ink: #e8f0ec; --muted: #a0b0a9; --line: #30403a;
+    --board: #2a7560; --board-ink: #f5fbf8; --band: #2b5c4b; --soft: #22302b;
+    --again: #f0917f; --close: #e3b552; --sure: #72d3ab; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101816; --bench: #17211e; --ink: #e8f0ec; --muted: #a0b0a9; --line: #30403a;
+  --board: #2a7560; --board-ink: #f5fbf8; --band: #2b5c4b; --soft: #22302b;
+  --again: #f0917f; --close: #e3b552; --sure: #72d3ab; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--sans); }
+button, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--board); outline-offset: 2px; }
+
+.page {
+  max-width: 1080px; margin: 0 auto;
+  padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 20px;
+}
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+h1 { margin: 0; font: 700 1.5rem/1.3 var(--serif); }
+.tally { color: var(--muted); font-size: .9rem; font-variant-numeric: tabular-nums; }
+
+.layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 24px; align-items: start; }
+.rail { display: grid; gap: 8px; }
+.rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.q-btn {
+  width: 100%; display: grid; grid-template-columns: 1.6em minmax(0, 1fr) auto; gap: 6px; align-items: center;
+  padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; text-align: left; font-size: .9rem; line-height: 1.35;
+}
+.q-btn:hover { background: var(--soft); }
+.q-btn[aria-current="true"] { background: var(--board); color: var(--board-ink); }
+.q-btn .n { font-family: var(--mono); font-size: .82rem; }
+.q-btn .st { font-size: .74rem; font-weight: 600; }
+.st.again { color: var(--again); } .st.close { color: var(--close); } .st.sure { color: var(--sure); }
+.q-btn[aria-current="true"] .st { color: var(--board-ink); }
+.rail-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.bench { background: var(--bench); border: 1px solid var(--line); border-radius: 8px; padding: clamp(18px, 3vw, 32px); display: grid; gap: 22px; min-width: 0; }
+.eyebrow { margin: 0 0 6px; color: var(--muted); font-size: .85rem; }
+.question { margin: 0; font: 700 clamp(1.4rem, 3.2vw, 1.85rem)/1.45 var(--serif); text-wrap: balance; word-break: keep-all; }
+
+.seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 9px 6px; font-size: .92rem; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--soft); font-weight: 600; }
+
+.clock { display: grid; gap: 10px; }
+.clock-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.time { font: 500 2.4rem/1 var(--mono); font-variant-numeric: tabular-nums; }
+.track { position: relative; height: 14px; border-radius: 3px; background: var(--soft); overflow: hidden; }
+.band { position: absolute; top: 0; bottom: 0; left: 33.333%; width: 44.444%; background: var(--band); }
+.fill { position: absolute; top: 0; bottom: 0; left: 0; width: 0; background: var(--board); opacity: .78; }
+.scale { position: relative; height: 1.2em; font: 500 .74rem/1.2 var(--mono); color: var(--muted); }
+.scale span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.scale span:first-child { transform: none; }
+.scale span:last-child { transform: translateX(-100%); }
+.verdict { margin: 0; font-size: .95rem; min-height: 1.6em; }
+
+.btn { border: 1px solid var(--line); background: var(--bench); border-radius: 6px; padding: 9px 14px; font-size: .94rem; }
+.btn:hover { background: var(--soft); }
+.btn.primary { background: var(--board); border-color: var(--board); color: var(--board-ink); font-weight: 600; padding-inline: 20px; }
+.btn.primary:hover { filter: brightness(1.12); }
+.btn.small { padding: 5px 10px; font-size: .84rem; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.panel-title { margin: 0 0 8px; font-size: .85rem; color: var(--muted); font-weight: 600; }
+.keys { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.keys li { display: flex; gap: 8px; align-items: flex-start; }
+.keys input { width: 1.05em; height: 1.05em; margin-top: .3em; accent-color: var(--board); flex: none; }
+.keys label { flex: 1; min-width: 0; }
+.answer { margin: 0; font-size: 1.14rem; line-height: 1.95; word-break: keep-all; white-space: pre-wrap; }
+.est { color: var(--muted); font-size: .84rem; font-variant-numeric: tabular-nums; }
+textarea { width: 100%; min-height: 240px; padding: 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); line-height: 1.8; resize: vertical; }
+.rate { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.rate .btn[aria-pressed="true"] { font-weight: 600; border-color: currentColor; background: var(--soft); }
+.rate .again { color: var(--again); } .rate .close { color: var(--close); } .rate .sure { color: var(--sure); }
+.foot { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 16px; }
+.note { margin: 0; color: var(--muted); font-size: .84rem; }
+audio { width: 100%; }
+
+.drive { position: fixed; inset: 0; z-index: 20; overflow: auto; background: var(--bg); padding-block: calc(24px + env(safe-area-inset-top, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.drive-in { max-width: 560px; min-height: 100%; margin: 0 auto; display: grid; gap: 22px; align-content: center; }
+.drive h2 { margin: 0; font: 700 1.6rem/1.35 var(--serif); }
+.drive .seg button { padding-block: 12px; }
+.drive .check { display: flex; gap: 10px; align-items: center; font-size: 1.02rem; }
+.drive .check input { width: 1.2em; height: 1.2em; accent-color: var(--board); }
+.drive .big { width: 100%; min-height: 72px; font-size: 1.25rem; }
+.drive-now { text-align: center; display: grid; gap: 10px; }
+.drive-count { color: var(--muted); font: 500 1.1rem/1.3 var(--mono); }
+.drive-title { margin: 0; font: 700 1.7rem/1.35 var(--serif); word-break: keep-all; }
+.drive-state { margin: 0; font-size: 1.15rem; color: var(--muted); }
+.drive-time { font: 500 clamp(4rem, 22vw, 7rem)/1 var(--mono); font-variant-numeric: tabular-nums; min-height: 1em; }
+.btn.stop { width: 100%; min-height: 140px; font-size: 1.7rem; font-weight: 600; background: var(--soft); color: var(--again); border-color: var(--again); }
+
+@media (max-width: 760px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .rail ol { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .q-btn { grid-template-columns: 1fr; justify-items: center; padding: 8px 2px 6px; border: 1px solid var(--line); gap: 0; min-height: 52px; align-content: center; }
+  .q-btn .tt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .q-btn .st { font-size: .66rem; }
+  .answer { font-size: 1.08rem; }
+}
+</style>
+
+<div class="page">
+  <header>
+    <h1>충남대 구술 연습</h1>
+    <span class="tally" id="tally"></span>
+  </header>
+  <div class="layout">
+    <nav class="rail" aria-label="문항 목록">
+      <ol id="list"></ol>
+      <div class="rail-tools">
+        <button class="btn small" id="driveBtn" type="button">운전 모드</button>
+        <button class="btn small" id="randomBtn" type="button">무작위 출제</button>
+        <button class="btn small" id="resetBtn" type="button">기록 지우기</button>
+      </div>
+    </nav>
+
+    <main class="bench">
+      <div>
+        <p class="eyebrow" id="eyebrow"></p>
+        <h2 class="question" id="question"></h2>
+      </div>
+
+      <div class="row">
+        <button class="btn small" id="speakQ" type="button">질문 듣기</button>
+      </div>
+
+      <div class="seg" role="group" aria-label="연습 단계">
+        <button type="button" data-level="1">답안 보고</button>
+        <button type="button" data-level="2">키워드만</button>
+        <button type="button" data-level="3">안 보고</button>
+      </div>
+
+      <section class="clock" aria-label="말하기 시간">
+        <div class="clock-top">
+          <span class="time" id="time" role="timer">0:00</span>
+          <div class="row">
+            <label class="row" id="recWrap" hidden><input type="checkbox" id="recOn" checked> 녹음</label>
+            <button class="btn primary" id="startBtn" type="button">말하기 시작</button>
+          </div>
+        </div>
+        <div>
+          <div class="track"><div class="band"></div><div class="fill" id="fill"></div></div>
+          <div class="scale"><span style="left:0">0초</span><span style="left:33.333%">30초</span><span style="left:77.778%">70초</span><span style="left:100%">90초</span></div>
+        </div>
+        <p class="verdict" id="verdict"></p>
+        <audio id="player" controls hidden></audio>
+      </section>
+
+      <section id="keysPanel" hidden>
+        <p class="panel-title" id="keysTitle">키워드</p>
+        <ul class="keys" id="keys"></ul>
+      </section>
+
+      <section id="answerPanel" hidden>
+        <div class="row" style="justify-content:space-between;margin-bottom:8px">
+          <p class="panel-title" style="margin:0">예시답안 <span class="est" id="est"></span></p>
+          <div class="row">
+            <button class="btn small" id="speakA" type="button">답안 듣기</button>
+            <button class="btn small" id="editBtn" type="button">내 말로 고치기</button>
+          </div>
+        </div>
+        <p class="answer" id="answer"></p>
+        <div id="editor" hidden>
+          <label class="panel-title" for="editText" style="display:block">답안 고치기. 입력한 내용은 이 브라우저에 저장됩니다.</label>
+          <textarea id="editText"></textarea>
+          <div class="row" style="margin-top:8px">
+            <button class="btn small" id="saveEdit" type="button">저장</button>
+            <button class="btn small" id="restoreEdit" type="button">원래 답안으로</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="ratePanel" hidden>
+        <p class="panel-title">방금 답변은 어땠나요?</p>
+        <div class="rate">
+          <button class="btn again" data-rate="again" type="button">다시</button>
+          <button class="btn close" data-rate="close" type="button">아슬아슬</button>
+          <button class="btn sure" data-rate="sure" type="button">자신 있음</button>
+        </div>
+      </section>
+
+      <div class="foot">
+        <button class="btn" id="prevBtn" type="button">이전 문항</button>
+        <button class="btn" id="nextBtn" type="button">다음 문항</button>
+      </div>
+      <p class="note" id="note"></p>
+    </main>
+  </div>
+</div>
+
+<div class="drive" id="drive" hidden>
+  <div class="drive-in" id="driveSetup">
+    <div>
+      <h2>운전 모드</h2>
+      <p class="note" style="font-size:.95rem;margin-top:8px">시동을 건 상태로 정차한 뒤 시작하세요. 시작하면 질문, 답변 시간, 예시답안이 자동으로 이어집니다. 다른 앱으로 넘어가면 멈출 수 있으니 이 화면을 켜 두세요.</p>
+    </div>
+    <div>
+      <p class="panel-title">문항당 답변 시간</p>
+      <div class="seg" role="group" aria-label="문항당 답변 시간">
+        <button type="button" data-secs="30">30초</button>
+        <button type="button" data-secs="45">45초</button>
+        <button type="button" data-secs="60">60초</button>
+      </div>
+    </div>
+    <label class="check"><input type="checkbox" id="driveHear" checked> 답변 뒤 예시답안 듣기</label>
+    <label class="check"><input type="checkbox" id="driveSkip"> ‘자신 있음’ 문항 건너뛰기</label>
+    <p class="note" id="driveMsg"></p>
+    <button class="btn primary big" id="driveStart" type="button">시작</button>
+    <button class="btn" id="driveClose" type="button">닫기</button>
+  </div>
+  <div class="drive-in" id="driveRun" hidden>
+    <div class="drive-now" aria-live="polite">
+      <span class="drive-count" id="driveCount"></span>
+      <p class="drive-title" id="driveTitle"></p>
+      <p class="drive-state" id="driveState"></p>
+      <div class="drive-time" id="driveTime"></div>
+    </div>
+    <button class="btn stop" id="driveStop" type="button">정지</button>
+  </div>
+</div>
+
+<script>
+var QUESTIONS = [
+  { code: "A1", title: "지원 동기",
+    q: "교육대학원 진로진학상담교육 전공에 지원한 동기는 무엇입니까?",
+    keys: ["의욕을 잃은 학생 앞의 한계", "정보와 계획만으로 부족", "세 아이의 부모로서 절감", "마음이 건강해야 진로도 그림", "이론과 연구로 전문성"],
+    a: "학업과 진로에 의욕을 잃은 학생들 앞에서 한계를 느꼈기 때문입니다. 고등학교에서 학년부장과 담임으로 진로진학을 지도했지만, 정보와 계획만으로는 이런 학생들을 움직이기 어려웠습니다. 세 아이를 키우는 부모로서도 마음이 건강해야 진로를 스스로 그릴 수 있다는 것을 절감했습니다. 그래서 정신건강과 진로진학상담을 함께 다루는 전문성을 체계적인 이론과 연구로 갖추고 싶습니다." },
+  { code: "A4", title: "공부 계획과 졸업 후 활용",
+    q: "입학 후 무엇을 어떻게 공부하고, 졸업 후 어떻게 활용하겠습니까?",
+    keys: ["이론의 기초", "정서 회복과 상담 기법", "프로그램 설계", "시범 적용과 기록", "SEL 기반 프로그램 개발 논문", "동료 교사와 공유"],
+    a: "세 영역으로 공부하겠습니다. 먼저 진로교육개론과 청소년 진로특성 진단 및 활용으로 이론의 기초를 다지겠습니다. 다음으로 정신건강과 상담, 집단상담 이론과 실제로 정서 회복과 상담 기법을 익히겠습니다. 그리고 진로진학지도 프로그램 활용 및 운영에서 프로그램 설계를 배우겠습니다. 학업 중에는 담당 학급과 학년에 시범 적용하고, 그 기록으로 무기력한 고등학생을 위한 SEL 기반 진로진학상담 프로그램 개발을 졸업논문으로 쓰겠습니다. 졸업 후에는 동료 교사와 공유해 정서 지원과 진로진학상담이 함께 이루어지는 상담 문화를 만들겠습니다." },
+  { code: "A2", title: "주요 연구 관심 분야",
+    q: "주요 연구 관심 분야는 무엇입니까?",
+    keys: ["정서·정신건강을 고려한 진로진학상담", "무기력의 원인 이해와 동기 회복", "진로 발달과 정서 안정의 연결", "현장 실천형 SEL 프로그램"],
+    a: "학생의 정서·정신건강을 고려한 진로진학상담입니다. 첫째, 사회정서학습과 사회정서 회복 기법으로 무기력의 원인을 이해하고 동기를 회복하는 상담 방법을 탐구하겠습니다. 둘째, 진로 발달과 정서 안정을 연결하는 상담 모델을 살펴보겠습니다. 셋째, 현장에서 실천 가능한 SEL 기반 프로그램을 구상하겠습니다. 이를 통해 무기력한 학생도 자신의 진로를 탐색하도록 돕고 싶습니다." },
+  { code: "A6", title: "SEL과 진로상담의 연결",
+    q: "사회정서학습(SEL)이란 무엇이며, 왜 진로상담과 연결하려 합니까?",
+    keys: ["감정 이해와 조절, 관계, 책임 있는 결정", "다섯 역량", "진로 탐색에도 같은 역량 필요", "감정 인식, 스트레스 대처, 작은 성공 경험"],
+    a: "SEL은 자신의 감정을 이해하고 조절하며, 타인과 관계를 맺고 책임 있게 결정하는 역량을 기르는 학습입니다. 흔히 자기 인식, 자기 관리, 사회적 인식, 관계 기술, 책임 있는 의사결정의 다섯 역량으로 설명합니다. 진로 탐색에도 자기 이해와 정서 조절, 의사결정이 필요합니다. 그래서 무기력한 학생에게는 감정 인식과 스트레스 대처, 작은 성공 경험을 먼저 돕고 이를 진로상담으로 연결하려 합니다." },
+  { code: "F2", title: "정신건강까지 공부하는 이유",
+    q: "진로상담 전공에서 왜 정신건강까지 공부하려고 합니까?",
+    keys: ["진로 문제와 정서 문제는 분리되지 않음", "정보만으로는 행동이 어려움", "교사의 역할은 치료가 아님", "조기 발견과 전문기관 연계", "정서 회복에서 진로 행동으로"],
+    a: "진로 문제와 정서 문제가 학교 현장에서 분리되지 않기 때문입니다. 의욕을 잃은 학생에게 진로 정보만 제공하면 행동으로 이어지기 어렵습니다. 물론 교사의 역할은 치료가 아니므로, 심리적 위기를 조기에 발견해 전문기관과 연계하는 기준도 배우겠습니다. 저는 정서 회복이 진로 행동으로 이어지는 다리를 놓고 싶습니다." },
+  { code: "E1", title: "무기력한 학생 상담",
+    q: "“하고 싶은 것도 없고 해도 안 될 것 같아요”라고 말하는 학생을 어떻게 상담하겠습니까?",
+    keys: ["재촉하지 않고 듣기", "정서 상태 살피기", "전문상담교사·담임 연계", "SCCT: 작은 성공 경험", "강점 언어화와 새로운 시도"],
+    a: "먼저 진로 결정을 재촉하지 않고 학생의 무기력한 마음을 충분히 듣겠습니다. 정서 상태와 학교생활의 어려움을 살펴, 필요하면 전문상담교사나 담임 교사와 연계하겠습니다. 이후 사회 인지적 진로 이론에 따라 작은 목표로 성공 경험을 쌓아 자기 효능감을 높이겠습니다. 강점을 찾아 언어화하고, 새로운 경험에 한 번 시도해 보도록 격려하겠습니다." },
+  { code: "F1", title: "가장 듣고 싶은 과목",
+    q: "우리 전공 교과과정에서 가장 듣고 싶은 과목은 무엇입니까?",
+    keys: ["정신건강과 상담", "무기력한 학생을 진로 탐색으로", "프로그램 활용 및 운영과 연결"],
+    a: "정신건강과 상담을 가장 듣고 싶습니다. 저의 문제의식은 무기력한 학생을 어떻게 진로 탐색으로 이끌 것인가에 있기 때문입니다. 이 과목으로 학생의 정서 문제를 이해한 뒤, 진로진학지도 프로그램 활용 및 운영과 연결해 현장에서 실천할 프로그램을 만들고 싶습니다." },
+  { code: "C2", title: "진로교육의 방향",
+    q: "앞으로 진로 교육의 방향은 어떻게 달라져야 합니까?",
+    keys: ["무엇이 될까에서 어떻게 살 것인가로", "자신만의 진로 이야기", "심리적 자산과 자기 돌봄", "변화 속에서 중심 잡기"],
+    a: "무엇이 될까를 묻는 교육에서 어떻게 살 것인가를 묻는 교육으로 바뀌어야 합니다. 적성과 직업을 연결하는 데 그치지 않고, 학생이 자신만의 진로 이야기를 만들게 해야 합니다. 또 심리적 자산을 기르고 스스로를 돌보는 힘을 키워야 합니다. 빠른 변화를 따라잡게 하기보다 그 안에서 중심을 잡도록 돕는 것이 교사의 역할입니다." },
+  { code: "D2", title: "계획된 우연 이론",
+    q: "계획된 우연 이론을 설명하십시오.",
+    keys: ["크럼볼츠", "우연을 기회로 만들기", "호기심, 인내심, 융통성, 낙관성, 위험 감수", "동아리와 체험을 시도하고 돌아보기"],
+    a: "크럼볼츠가 제시한 이론으로, 삶의 우연을 적극적으로 활용해 기회로 만드는 데 초점을 둡니다. 필요한 기술은 호기심, 인내심, 융통성, 낙관성, 위험 감수입니다. 상담의 목표는 합리적 결정 자체보다 예측하기 어려운 현실에서 실천할 행동을 배우게 하는 것입니다. 저는 학생이 새로운 동아리와 체험에 시도해 보고, 그 경험의 의미를 돌아보게 하겠습니다." },
+  { code: "D1", title: "사회 인지적 진로 이론",
+    q: "사회 인지적 진로 이론(SCCT)을 설명하고 교육적 적용을 말하십시오.",
+    keys: ["렌트, 브라운, 해켓", "자기 효능감, 결과 기대, 목표", "진로 장벽과 사회적 지지", "작은 성공 경험", "제외한 대안 재탐색"],
+    a: "렌트, 브라운, 해켓이 반두라의 이론을 바탕으로 발전시킨 이론입니다. 핵심 개념은 자기 효능감, 결과 기대, 목표입니다. 또한 진로 장벽과 사회적 지지 같은 맥락 요인을 중시합니다. 학교에서는 작은 성공 경험으로 효능감을 높이고, 잘못된 결과 기대로 제외한 대안을 다시 탐색하게 합니다. 왜곡된 진로 장벽은 현실적으로 인식하고 대처하도록 돕습니다." },
+  { code: "A3", title: "석사 과정이 필요한 이유",
+    q: "이미 학교에서 진로진학 업무를 하고 있는데, 왜 석사 과정이 필요합니까?",
+    keys: ["경험만으로는 설명과 적용이 어려움", "이론과 연구 방법으로 실천 점검", "진로 교사도 계속 배워야 함", "경험을 이론으로 다시 정리"],
+    a: "경험만으로는 효과가 있었던 지도를 설명하고 다른 학생에게 적용하기 어렵기 때문입니다. 상담 이론과 연구 방법을 배우면 제 실천을 근거로 점검할 수 있습니다. 또 진로 환경이 빠르게 바뀌는 만큼 진로 교사도 계속 배워야 합니다. 대학원 과정을 현장 경험을 이론으로 다시 정리하는 기회로 삼겠습니다." },
+  { code: "A7", title: "졸업논문 연구 방법",
+    q: "졸업논문 주제는 어떻게 연구하겠습니까?",
+    keys: ["무기력한 고등학생의 특성 파악", "감정, 스트레스, 관계, 작은 성공 경험", "시범 적용과 변화 기록", "지도교수 지도로 구체화", "학생 동의와 개인정보 보호"],
+    a: "무기력한 고등학생의 특성을 먼저 살핀 뒤 SEL 기반 프로그램을 설계하겠습니다. 감정 인식과 표현, 스트레스 대처, 관계 회복, 작은 성공 경험 쌓기를 학생 수준에 맞게 구성하겠습니다. 시범 적용 과정에서 학생의 반응과 변화를 기록해 효과를 확인하고 프로그램을 수정하겠습니다. 연구 대상과 방법은 지도교수님의 지도를 받아 구체화하고, 학생 동의와 개인정보 보호를 지키겠습니다." },
+  { code: "F5", title: "SEL 계획과 진로진학 지도",
+    q: "사회정서학습 중심의 계획이 진로진학 지도와 멀어지는 것은 아닙니까?",
+    keys: ["대체가 아니라 연결", "학생마다 먼저 필요한 지원이 다름", "진로 진단과 진학 정보도 공부", "회복 후 실제 진로·진학 계획까지"],
+    a: "저는 대체가 아니라 연결이라고 생각합니다. 학생에 따라 입시 정보가 먼저 필요한 경우도 있고, 마음의 회복이 먼저 필요한 경우도 있습니다. 그래서 정서 지원과 함께 진로교육개론, 진로특성 진단, 진학 정보 관련 과목도 충실히 공부하겠습니다. 회복한 학생이 실제 진로와 진학 계획까지 세우도록 돕는 것이 목표입니다." },
+  { code: "A8", title: "부모로서의 경험",
+    q: "수학계획서에 쓴 부모로서의 경험이 진로상담에 어떤 도움이 됩니까?",
+    keys: ["학부모의 불안과 기대 이해", "가족 맥락까지 함께 봄", "내 경험을 일반화하지 않음", "학생과 가정마다 다른 상황 경청"],
+    a: "학부모의 불안과 기대를 함께 이해하는 데 도움이 됩니다. 자녀가 꿈을 찾지 못하거나 마음이 힘들 때 부모가 겪는 고민을 저도 경험했습니다. 그래서 학생을 지원할 때 가족의 맥락까지 함께 보게 되었습니다. 다만 제 경험을 일반화하지 않고, 학생과 가정마다 다른 상황을 듣는 자세를 지키겠습니다." },
+  { code: "E2", title: "학생과 학부모의 진로 갈등",
+    q: "학생은 디자인을 원하지만 학부모는 의대 진학을 요구합니다. 어떻게 지도하겠습니까?",
+    keys: ["어느 한쪽을 설득하지 않음", "학생의 특성을 객관적 자료로 정리", "학부모의 걱정 경청", "다양한 진로 경로 함께 검토", "결정은 학생이 주도"],
+    a: "어느 한쪽을 설득하기보다 학생과 학부모가 대화할 수 있도록 돕겠습니다. 먼저 학생의 흥미, 적성, 가치관과 실제 학업 상황을 객관적 자료로 정리하겠습니다. 학부모의 걱정과 기대도 경청한 뒤 다양한 진로 경로와 현실적 조건을 함께 살펴보겠습니다. 최종 결정은 학생이 주도하되, 학부모를 진로교육의 협력자로 세우겠습니다." },
+  { code: "C4", title: "바람직한 진로진학상담교사",
+    q: "바람직한 진로진학상담교사의 모습은 무엇입니까?",
+    keys: ["준비하는 교사", "소통하고 협력하는 교사", "성장하는 교사", "관찰, 성찰, 통찰"],
+    a: "준비하는 교사, 소통하고 협력하는 교사, 성장하는 교사입니다. 준비하는 교사는 학생의 성장 가능성을 믿고, 관찰, 성찰, 통찰의 태도로 학생의 강점을 발굴합니다. 소통하고 협력하는 교사는 모든 교사, 학부모와 함께 진로교육을 만들어 갑니다. 성장하는 교사는 스스로 전문성을 넓혀 가며 학생의 좋은 역할 모델이 됩니다." },
+  { code: "B8", title: "고교학점제와 교사의 역할",
+    q: "고교학점제에서 진로진학상담교사의 역할은 무엇입니까?",
+    keys: ["진로와 과목 선택의 연결", "진로와 적성에 따른 과목 선택", "희망 전공에 필요한 과목 안내", "진로 변경에 대비한 대안 경로"],
+    a: "학생의 진로와 과목 선택을 연결해 주는 역할입니다. 고교학점제는 학생이 진로와 적성에 따라 과목을 선택하고 학점을 취득, 누적해 졸업하는 제도입니다. 따라서 흥미와 적성을 탐색하게 하고, 희망 진로와 대학 전공에 필요한 과목을 안내해야 합니다. 동시에 진로가 바뀔 수 있음을 알려 대안 경로까지 함께 설계하게 하겠습니다." },
+  { code: "B3", title: "핵심 역량",
+    q: "핵심 역량 6가지를 말하고, 진로교육에서 가장 중요한 역량을 근거와 함께 말하십시오.",
+    keys: ["자기관리, 지식정보처리, 창의적 사고", "심미적 감성, 협력적 소통, 공동체", "자기관리 역량이 가장 직접적", "삶과 진로를 스스로 설계", "다른 역량과 통합"],
+    a: "핵심 역량은 자기관리, 지식정보처리, 창의적 사고, 심미적 감성, 협력적 소통, 공동체 역량입니다. 저는 자기관리 역량이 가장 직접적이라고 봅니다. 이 역량은 자아 정체성과 자신감을 바탕으로 삶과 진로를 스스로 설계하는 능력이기 때문입니다. 다만 진로 정보를 판단하려면 지식정보처리 역량이, 함께 일하려면 협력적 소통 역량이 필요하므로 통합적으로 길러야 합니다." },
+  { code: "D3", title: "구성주의 진로 이론",
+    q: "사비카스의 구성주의 진로 이론과 진로 적응력을 설명하십시오.",
+    keys: ["슈퍼의 이론 확장", "삶을 만들어 가는 주체", "생애 이야기", "진로 적응력의 의미", "경험을 이야기로 풀어 생애 주제 찾기"],
+    a: "사비카스는 슈퍼의 이론을 확장해 개인을 삶을 만들어 가는 주체로 보았습니다. 진로는 맞는 일을 찾는 데 그치지 않고, 직업 세계와의 관계 속에서 생애 이야기를 만드는 과정입니다. 진로 적응력은 사회가 부과하는 과제를 처리하기 위해 자신의 진로 행동을 조절하는 능력입니다. 학교에서는 학생의 경험을 이야기로 풀어 쓰고 그 안에서 생애 주제를 찾게 할 수 있습니다." },
+  { code: "A5", title: "근무와 학업의 병행",
+    q: "근무와 학업을 어떻게 병행하겠습니까?",
+    keys: ["계절제 수업에 맞춘 계획", "업무의 질문을 연구 주제로", "현장 사례 활용과 학교 적용"],
+    a: "계절제 수업에 맞춰 학기 중 계획을 미리 세워 병행하겠습니다. 업무에서 생긴 질문을 과제와 연구 주제로 삼으면 일과 학업이 분리되지 않습니다. 현장 사례를 학업에 활용하고, 배운 내용을 다시 학교에 적용하겠습니다." }
+];
+
+var RATE_LABEL = { again: "다시", close: "아슬", sure: "자신" };
+var KEY = "cnu-oral-practice-v1";
+var SYLLABLES_PER_SECOND = 4.5;
+
+var store = load();
+var cur = 0, level = 1, phase = "idle", startedAt = 0, elapsed = 0, raf = 0, editing = false;
+var recorder = null, chunks = [], stream = null, audioUrl = null;
+var isStandalone = window.self === window.top;
+var canRecord = isStandalone && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+var canSpeak = "speechSynthesis" in window;
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || { rate: {}, edits: {}, last: {} }; }
+  catch (e) { return { rate: {}, edits: {}, last: {} }; }
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+function $(id) { return document.getElementById(id); }
+function answerText(i) { return store.edits[QUESTIONS[i].code] || QUESTIONS[i].a; }
+function fmt(s) { var t = Math.floor(s); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); }
+function estSeconds(text) { return Math.round(text.replace(/\s/g, "").length / SYLLABLES_PER_SECOND); }
+
+function renderList() {
+  var ol = $("list"); ol.textContent = "";
+  QUESTIONS.forEach(function (q, i) {
+    var li = document.createElement("li"), b = document.createElement("button");
+    b.type = "button"; b.className = "q-btn";
+    b.setAttribute("aria-current", i === cur ? "true" : "false");
+    var n = document.createElement("span"); n.className = "n"; n.textContent = i + 1;
+    var t = document.createElement("span"); t.className = "tt"; t.textContent = q.title;
+    var r = store.rate[q.code];
+    var st = document.createElement("span"); st.className = "st " + (r || ""); st.textContent = r ? RATE_LABEL[r] : "";
+    b.append(n, t, st);
+    b.addEventListener("click", function () { go(i); });
+    li.append(b); ol.append(li);
+  });
+  var done = QUESTIONS.filter(function (q) { return store.rate[q.code] === "sure"; }).length;
+  var tried = QUESTIONS.filter(function (q) { return store.rate[q.code]; }).length;
+  $("tally").textContent = "연습 " + tried + " / " + QUESTIONS.length + " · 자신 있음 " + done;
+}
+
+function renderQuestion() {
+  var q = QUESTIONS[cur], last = store.last[q.code];
+  $("eyebrow").textContent = "중요도 " + (cur + 1) + "위 · " + q.title + (last ? " · 지난 답변 " + fmt(last) : "");
+  $("question").textContent = q.q;
+  document.querySelectorAll("[data-level]").forEach(function (b) {
+    b.setAttribute("aria-pressed", String(+b.dataset.level === level));
+  });
+  document.querySelectorAll("[data-rate]").forEach(function (b) {
+    b.setAttribute("aria-pressed", String(store.rate[q.code] === b.dataset.rate));
+  });
+  var after = phase === "done";
+  var showKeys = (level === 2) || (after && level !== 1);
+  $("keysPanel").hidden = !showKeys;
+  $("keysTitle").textContent = after ? "말한 내용에 표시하세요" : "키워드";
+  var ul = $("keys"); ul.textContent = "";
+  if (showKeys) q.keys.forEach(function (k, i) {
+    var li = document.createElement("li");
+    if (after) {
+      var c = document.createElement("input"); c.type = "checkbox"; c.id = "key" + i;
+      var l = document.createElement("label"); l.htmlFor = c.id; l.textContent = k;
+      li.append(c, l);
+    } else { li.textContent = "· " + k; }
+    ul.append(li);
+  });
+  var showAnswer = level === 1 || after;
+  $("answerPanel").hidden = !showAnswer;
+  var text = answerText(cur);
+  $("answer").textContent = text;
+  $("answer").hidden = editing;
+  $("editor").hidden = !editing;
+  $("est").textContent = "· 천천히 말하면 약 " + estSeconds(text) + "초";
+  $("ratePanel").hidden = !after;
+  $("prevBtn").disabled = cur === 0;
+  $("nextBtn").textContent = cur === QUESTIONS.length - 1 ? "처음으로" : "다음 문항";
+  $("startBtn").textContent = phase === "running" ? "답변 끝" : (after ? "다시 말하기" : "말하기 시작");
+}
+
+function setClock(s) {
+  $("time").textContent = fmt(s);
+  $("fill").style.width = Math.min(s / 90 * 100, 100) + "%";
+}
+
+function tick() {
+  if (phase !== "running") return;
+  elapsed = (performance.now() - startedAt) / 1000;
+  setClock(elapsed);
+  raf = requestAnimationFrame(tick);
+}
+
+function verdict(s) {
+  if (s < 30) return fmt(s) + " 답변입니다. 30초보다 짧으니 근거나 사례를 한 문장 더하세요.";
+  if (s <= 70) return fmt(s) + " 답변입니다. 적당한 길이입니다.";
+  return fmt(s) + " 답변입니다. 70초를 넘었으니 결론과 근거만 남기고 줄여 보세요.";
+}
+
+async function startRec() {
+  if (!canRecord || !$("recOn").checked) return;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    chunks = [];
+    var rec = new MediaRecorder(stream), mic = stream; recorder = rec;
+    rec.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
+    rec.onstop = function () {
+      if (audioUrl) URL.revokeObjectURL(audioUrl);
+      audioUrl = URL.createObjectURL(new Blob(chunks, { type: rec.mimeType }));
+      $("player").src = audioUrl; $("player").hidden = false;
+      mic.getTracks().forEach(function (t) { t.stop(); });
+    };
+    if (phase !== "running") { stream.getTracks().forEach(function (t) { t.stop(); }); return; }
+    rec.start();
+  } catch (e) {
+    $("verdict").textContent = "마이크를 쓸 수 없어 녹음 없이 진행합니다. 브라우저의 마이크 권한을 확인하세요.";
+  }
+}
+function stopRec() { if (recorder && recorder.state === "recording") recorder.stop(); recorder = null; }
+
+function start() {
+  stopSpeak(); editing = false; phase = "running"; elapsed = 0;
+  startedAt = performance.now();
+  $("verdict").textContent = ""; $("player").hidden = true;
+  renderQuestion(); tick(); startRec();
+}
+function stop() {
+  phase = "done"; cancelAnimationFrame(raf); stopRec();
+  store.last[QUESTIONS[cur].code] = Math.round(elapsed); save();
+  setClock(elapsed);
+  $("verdict").textContent = verdict(elapsed);
+  renderQuestion();
+  $("eyebrow").textContent = "중요도 " + (cur + 1) + "위 · " + QUESTIONS[cur].title;
+}
+function clearRun() {
+  if (phase === "running") { cancelAnimationFrame(raf); stopRec(); }
+  stopSpeak(); phase = "idle"; elapsed = 0; editing = false;
+  setClock(0); $("verdict").textContent = ""; $("player").hidden = true;
+}
+function go(i) { clearRun(); cur = i; renderList(); renderQuestion(); window.scrollTo(0, 0); }
+
+function speak(text) {
+  stopSpeak();
+  try {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "ko-KR"; u.rate = 0.95;
+    u.onerror = function (e) {
+      if (e.error !== "canceled" && e.error !== "interrupted") $("note").textContent = "이 기기에서는 읽어 주기가 되지 않습니다. 질문을 눈으로 보고 연습하세요.";
+    };
+    speechSynthesis.speak(u);
+  } catch (e) { $("note").textContent = "이 기기에서는 읽어 주기가 되지 않습니다. 질문을 눈으로 보고 연습하세요."; }
+}
+function stopSpeak() { if (canSpeak && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel(); }
+
+var drive = { token: 0, secs: 45, wake: null, ctx: null };
+function speechText(t) { return t.replace(/SEL/g, "에스이엘").replace(/SCCT/g, "에스씨씨티"); }
+function sentences(t) { return speechText(t).match(/[^.?!]+[.?!]?/g) || [t]; }
+function say(text, token) {
+  return new Promise(function (res) {
+    if (token !== drive.token) return res(false);
+    var done = false, guard;
+    function fin(ok) { if (done) return; done = true; clearTimeout(guard); res(ok); }
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "ko-KR"; u.rate = 0.95;
+    var ko = speechSynthesis.getVoices().filter(function (v) { return /^ko/i.test(v.lang); })[0];
+    if (ko) u.voice = ko;
+    u.onend = function () { fin(true); };
+    u.onerror = function (e) { fin(e.error === "canceled" || e.error === "interrupted"); };
+    guard = setTimeout(function () { fin(true); }, text.length * 400 + 6000);
+    speechSynthesis.speak(u);
+  });
+}
+async function sayAll(parts, token) {
+  for (var i = 0; i < parts.length; i++) {
+    var ok = await say(parts[i], token);
+    if (token !== drive.token) return false;
+    if (!ok) { driveFail(); return false; }
+  }
+  return true;
+}
+function pause(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+async function countdown(secs, token) {
+  var end = Date.now() + secs * 1000;
+  while (token === drive.token) {
+    var left = Math.ceil((end - Date.now()) / 1000);
+    if (left <= 0) break;
+    $("driveTime").textContent = left;
+    await pause(200);
+  }
+  $("driveTime").textContent = "";
+}
+function beep(freq, secs) {
+  try {
+    var c = drive.ctx, o = c.createOscillator(), g = c.createGain();
+    o.frequency.value = freq; g.gain.value = 0.25;
+    o.connect(g); g.connect(c.destination);
+    o.start(); o.stop(c.currentTime + secs);
+  } catch (e) {}
+}
+function driveShow(count, title, state) {
+  $("driveCount").textContent = count; $("driveTitle").textContent = title; $("driveState").textContent = state;
+}
+function wakeOn() {
+  if (!navigator.wakeLock) return;
+  navigator.wakeLock.request("screen").then(function (w) { drive.wake = w; }).catch(function () {});
+}
+function wakeOff() { if (drive.wake) { drive.wake.release().catch(function () {}); drive.wake = null; } }
+function driveSetup() {
+  $("driveRun").hidden = true; $("driveSetup").hidden = false;
+  document.querySelectorAll("[data-secs]").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.secs === drive.secs)); });
+}
+function driveHalt() {
+  drive.token++; stopSpeak(); wakeOff(); $("driveTime").textContent = "";
+}
+function driveFail() {
+  driveHalt(); driveSetup();
+  $("driveMsg").textContent = "이 기기에서는 읽어 주기가 되지 않습니다. 한국어 음성이 설치되어 있는지 확인하세요.";
+}
+async function driveLoop(order, token) {
+  var hear = $("driveHear").checked;
+  for (var i = 0; i < order.length; i++) {
+    var idx = order[i], q = QUESTIONS[idx], count = (i + 1) + " / " + order.length;
+    cur = idx;
+    driveShow(count, q.title, "질문을 읽는 중");
+    if (!await sayAll([(idx + 1) + "번 문항."].concat(sentences(q.q)), token)) return;
+    beep(880, 0.2);
+    driveShow(count, q.title, "답변하세요");
+    await countdown(drive.secs, token);
+    if (token !== drive.token) return;
+    beep(660, 0.15); await pause(250); beep(660, 0.15); await pause(500);
+    if (hear) {
+      driveShow(count, q.title, "예시답안을 읽는 중");
+      if (!await sayAll(["예시답안입니다."].concat(sentences(answerText(idx))), token)) return;
+    }
+    await pause(1500);
+    if (token !== drive.token) return;
+  }
+  driveShow("", "연습을 마쳤습니다", "");
+  await sayAll(["연습을 모두 마쳤습니다."], token);
+  if (token !== drive.token) return;
+  driveHalt(); driveSetup(); renderList(); renderQuestion();
+}
+
+$("startBtn").addEventListener("click", function () { if (phase === "running") stop(); else start(); });
+document.querySelectorAll("[data-level]").forEach(function (b) {
+  b.addEventListener("click", function () { level = +b.dataset.level; if (phase === "done") clearRun(); renderQuestion(); });
+});
+document.querySelectorAll("[data-rate]").forEach(function (b) {
+  b.addEventListener("click", function () { store.rate[QUESTIONS[cur].code] = b.dataset.rate; save(); renderList(); renderQuestion(); });
+});
+$("prevBtn").addEventListener("click", function () { if (cur > 0) go(cur - 1); });
+$("nextBtn").addEventListener("click", function () { go((cur + 1) % QUESTIONS.length); });
+$("randomBtn").addEventListener("click", function () {
+  var pool = QUESTIONS.map(function (q, i) { return i; }).filter(function (i) { return i !== cur && store.rate[QUESTIONS[i].code] !== "sure"; });
+  if (!pool.length) pool = QUESTIONS.map(function (q, i) { return i; }).filter(function (i) { return i !== cur; });
+  level = 3; go(pool[Math.floor(Math.random() * pool.length)]);
+});
+$("resetBtn").addEventListener("click", function () {
+  var b = $("resetBtn");
+  if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = "한 번 더 누르면 지웁니다"; setTimeout(function () { delete b.dataset.armed; b.textContent = "기록 지우기"; }, 4000); return; }
+  store.rate = {}; store.last = {}; save(); delete b.dataset.armed; b.textContent = "기록 지우기";
+  renderList(); renderQuestion();
+});
+$("speakQ").addEventListener("click", function () { speak(QUESTIONS[cur].q); });
+$("speakA").addEventListener("click", function () { speak(answerText(cur)); });
+$("editBtn").addEventListener("click", function () {
+  editing = !editing; $("editText").value = answerText(cur); stopSpeak(); renderQuestion();
+});
+$("saveEdit").addEventListener("click", function () {
+  var v = $("editText").value.trim();
+  if (v) store.edits[QUESTIONS[cur].code] = v; else delete store.edits[QUESTIONS[cur].code];
+  save(); editing = false; renderQuestion();
+});
+$("restoreEdit").addEventListener("click", function () {
+  delete store.edits[QUESTIONS[cur].code]; save(); editing = false; renderQuestion();
+});
+
+$("driveBtn").addEventListener("click", function () {
+  clearRun(); $("driveMsg").textContent = ""; driveSetup(); $("drive").hidden = false;
+});
+$("driveClose").addEventListener("click", function () { $("drive").hidden = true; });
+document.querySelectorAll("[data-secs]").forEach(function (b) {
+  b.addEventListener("click", function () { drive.secs = +b.dataset.secs; driveSetup(); });
+});
+$("driveStart").addEventListener("click", function () {
+  var all = QUESTIONS.map(function (q, i) { return (cur + i) % QUESTIONS.length; });
+  var order = $("driveSkip").checked ? all.filter(function (i) { return store.rate[QUESTIONS[i].code] !== "sure"; }) : all;
+  if (!order.length) order = all;
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    drive.ctx = drive.ctx || new AC();
+    drive.ctx.resume();
+  } catch (e) {}
+  $("driveSetup").hidden = true; $("driveRun").hidden = false;
+  wakeOn();
+  driveLoop(order, ++drive.token);
+});
+$("driveStop").addEventListener("click", function () {
+  driveHalt(); driveSetup(); renderList(); renderQuestion(); setClock(0);
+  $("drive").hidden = true;
+});
+document.addEventListener("visibilitychange", function () {
+  if (!document.hidden && !$("driveRun").hidden && !$("drive").hidden) wakeOn();
+});
+
+if (!canSpeak) { $("speakQ").hidden = true; $("speakA").hidden = true; $("driveBtn").hidden = true; }
+$("recWrap").hidden = !canRecord;
+$("note").textContent = canRecord
+  ? "녹음은 이 기기에서만 재생되고 저장되지 않습니다."
+  : "이 화면에서는 녹음이 되지 않습니다. 내 목소리를 들어 보려면 휴대폰 음성 메모를 함께 켜 두세요.";
+renderList(); renderQuestion(); setClock(0);
+</script>
+
+</body></html>
